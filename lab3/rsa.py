@@ -50,7 +50,6 @@ def key_generation(length: int) -> tuple:
     d = usefulFunctions.gcd_extended(exponent, phi)[1]
     if d < 0:
         d += phi
-    # print(d)
 
     # 7 этап: запишем закрытый ключ в файл
     decryption_key = ' '.join(map(str, [d, n]))
@@ -65,15 +64,13 @@ def encryption(open_key: str, L: int = 512) -> str:
     exponent, n = open_key.split(' ')
     with open('input.txt') as file:
         input_text = file.readline()
-    # if len(input_text) > len(n) // 2:
-    #     input_text = input_text[: len(n) // 2]
+
     binary_code = [format(int.from_bytes(i.encode(), 'big'), '08b') for i in input_text]
     binary_code = ''.join(binary_code)  # объединяем все в одну строку
     print('input text bits: ', binary_code)
 
     binary_code = [binary_code[x:x + L // 4] for x in
                    range(0, len(binary_code), L // 4)]  # dividing string by L/4 elements
-    # print(binary_code)
 
     C = []
     for el in binary_code:
@@ -115,23 +112,23 @@ if __name__ == '__main__':
     encryption(open_key, L)
     decryption(decryption_key, L)
 
-    # lst = decryption_key.split()
-    # n = int(lst[1])
-    #
-    # # 4-th exercise
-    # times = []
-    # key = []
-    # for key_lenght in range(30, 90, 2):
-    #     open_key, decryption_key = key_generation(key_lenght)
-    #     lst = decryption_key.split()
-    #     n = int(lst[1])
-    #     times.append(pollard_euristic(n)[1])
-    #     key.append(key_lenght)
-    # plt.plot(key, times)
-    # mplcyberpunk.add_glow_effects()
-    # plt.show()
+    lst = decryption_key.split()
+    n = int(lst[1])
+    
+    # 4-th exercise
+    times = []
+    key = []
+    for key_lenght in range(30, 90, 2):
+        open_key, decryption_key = key_generation(key_lenght)
+        lst = decryption_key.split()
+        n = int(lst[1])
+        times.append(pollard_euristic(n)[1])
+        key.append(key_lenght)
+    plt.plot(key, times)
+    mplcyberpunk.add_glow_effects()
+    plt.show()
 
-    #  5-th exercise
+#      5-th exercise
 
-    # usefulFunctions.p_q_generation()
+    usefulFunctions.p_q_generation()
 

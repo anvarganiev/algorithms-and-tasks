@@ -1,11 +1,14 @@
 '''
 z = r exp(j phi)
 Where r = sqrt(x^2 + y^2) and phi=atan2(x,y)
+
+Делаем прямое БПФ, амплитуду/фазу делаем константой --> делаем обратное БПФ
 '''
 import cv2
 import numpy as np
 import torch
 import torchvision.transforms as transforms
+import matplotlib.pyplot as plt
 
 loader = transforms.Compose([transforms.ToTensor()])
 
@@ -23,7 +26,7 @@ img = process_img("./house.jpg", 128)
 def fft_amplitude_aug(img):
 
     img_fft = torch.fft.fft2(img)
-    const_amp = 20000  # whatever the constant amplitude you want
+    const_amp = 100  # whatever the constant amplitude you want
     new_fft = const_amp * torch.exp(1j * img_fft.angle())
     # reconstruct the new image from the modulated Fourier:
     img_ifft = torch.fft.ifft2(new_fft, dim=(-2, -1))
@@ -41,8 +44,8 @@ def fft_phase_aug(img):
     img_abs = torch.abs(img_fft)
     # img_pha = torch.angle(img_fft)
     img_pha = torch.full(img_fft.shape, 0.5)
-    print(f"img_phase: {img_pha}")
-    print(f"img_abs: {img_abs}")
+    # print(f"img_phase: {img_pha}")
+    # print(f"img_abs: {img_abs}")
     new_fft = img_abs * torch.exp(1j * img_pha)
     img_ifft = torch.fft.ifft2(new_fft, dim=(-2, -1))
     img_ifft = img_ifft.squeeze(0)
@@ -52,9 +55,12 @@ def fft_phase_aug(img):
 
     return img_ifft
 
-
-img_ifft = fft_phase_aug(img)
-
-cv2.imshow("", img_ifft)
-cv2.waitKey()
-
+img_ifft_amp = fft_amplitude_aug(img)
+plt.imshow(img_ifft_amp)
+plt.show()
+img_ifft_ph = fft_phase_aug(img)
+plt.imshow(img_ifft_ph)
+plt.show()
+img_ifft = img_ifft_amp + img_ifft_ph
+plt.imshow(img_ifft)
+plt.show()
